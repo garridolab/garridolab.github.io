@@ -21,7 +21,6 @@
       cursor: crosshair;
     }
 
-    /* Text sits above canvas; pointer-events: none lets clicks reach the canvas */
     .stage {
       position: fixed;
       inset: 0;
@@ -39,15 +38,8 @@
       color: #EEE9E0;
       text-align: center;
       text-wrap: balance;
-      /* initial fade-in */
       opacity: 0;
       animation: rise 3s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards;
-    }
-
-    /* Added by JS once fade-in completes */
-    .coming-soon.pulsing {
-      opacity: 1;
-      animation: textPulse 5s ease-in-out infinite;
     }
 
     @keyframes rise {
@@ -55,21 +47,8 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Text glows orange in sync with the network auto-pulse */
-    @keyframes textPulse {
-      0%, 100% {
-        text-shadow: 0 0 80px rgba(200, 82, 12, 0.14);
-      }
-      38% {
-        text-shadow:
-          0 0 28px rgba(248, 158, 20, 0.80),
-          0 0 80px rgba(210, 90, 12, 0.40);
-      }
-    }
-
     @media (prefers-reduced-motion: reduce) {
       .coming-soon { animation: none; opacity: 1; }
-      .coming-soon.pulsing { animation: none; }
     }
   </style>
 </head>
@@ -85,37 +64,58 @@
     const ctx    = canvas.getContext('2d');
     let W, H, t = 0, raf;
 
-    /* ── Propagation config ── */
-    const HOP_MS      = 62;     // ms between each network hop
-    const HOP_DECAY   = 0.79;   // energy lost per hop
-    const MIN_ENERGY  = 0.030;  // stop propagating below this
-    const FRAME_DECAY = 0.9940; // per-frame cooling (~2s full fade at 60fps)
-    const PULSE_MS    = 5000;   // auto-pulse period (must match CSS textPulse duration)
+    const HOP_MS      = 62;
+    const HOP_DECAY   = 0.79;
+    const MIN_ENERGY  = 0.030;
+    const FRAME_DECAY = 0.9940;
 
     let nodes   = [];
     let edges   = [];
-    let signals = [];  // { nodeIdx, strength, arrivalMs, ch }
-    let flashes = [];  // { x, y, startMs, ch }
+    let signals = [];
+    let flashes = [];
 
-    /* ── Thermal palettes ──
-       'orange' : auto-pulse from Coming Soon text
-       'green'  : user click                         */
     const PAL = {
       orange: [
-        [  7,  12,  20 ],   // 0.00 – background dark
-        [ 88,  27,   5 ],   // 0.25 – dark burnt
-        [210,  72,   8 ],   // 0.50 – orange
-        [242, 148,  12 ],   // 0.75 – amber
-        [255, 220,  90 ],   // 1.00 – golden white
+        [  7,  12,  20 ],
+        [ 88,  27,   5 ],
+        [210,  72,   8 ],
+        [242, 148,  12 ],
+        [255, 220,  90 ],
+      ],
+      red: [
+        [  7,  12,  20 ],
+        [ 60,   8,   8 ],
+        [150,  18,  15 ],
+        [210,  38,  28 ],
+        [255,  85,  65 ],
+      ],
+      blue: [
+        [  7,  12,  20 ],
+        [  8,  18,  62 ],
+        [ 18,  48, 145 ],
+        [ 38,  88, 205 ],
+        [ 80, 148, 255 ],
       ],
       green: [
-        [  7,  12,  20 ],   // 0.00 – background dark
-        [  5,  46,  19 ],   // 0.25 – deep forest
-        [ 12, 105,  40 ],   // 0.50 – forest green
-        [ 22, 158,  65 ],   // 0.75 – medium green
-        [ 55, 210,  98 ],   // 1.00 – bright green
+        [  7,  12,  20 ],
+        [  5,  46,  19 ],
+        [ 12, 105,  40 ],
+        [ 22, 158,  65 ],
+        [ 55, 210,  98 ],
+      ],
+      yellow: [
+        [  7,  12,  20 ],
+        [ 52,  38,   5 ],
+        [138, 108,  10 ],
+        [208, 168,  18 ],
+        [255, 228,  55 ],
       ],
     };
+
+    /* Click color cycle — advances on each click/touch */
+    const CLICK_CYCLE = ['red', 'blue', 'green', 'yellow'];
+    let clickIdx = 0;
+    let clickCh  = CLICK_CYCLE[0]; // palette used to render energyG
 
     function thermalRgb(e, ch) {
       const stops = PAL[ch];
@@ -136,28 +136,48 @@
 
     function resolveRgb(eo, eg) {
       if (eo < 0.003 && eg < 0.003) return null;
-      if (eo < 0.003) return { rgb: thermalRgb(eg, 'green'),  e: eg };
-      if (eg < 0.003) return { rgb: thermalRgb(eo, 'orange'), e: eo };
+      if (eo < 0.003) return { rgb: thermalRgb(eg, clickCh),   e: eg };
+      if (eg < 0.003) return { rgb: thermalRgb(eo, 'orange'),  e: eo };
       return {
-        rgb: blendRgb(thermalRgb(eo, 'orange'), eo, thermalRgb(eg, 'green'), eg),
+        rgb: blendRgb(thermalRgb(eo, 'orange'), eo, thermalRgb(eg, clickCh), eg),
         e:   Math.max(eo, eg),
       };
     }
 
-    /* ── Graph generation ── */
+    /* ── Layered node placement ──
+       y is sampled from a power distribution biased toward the bottom:
+         y = (H - pad*2) * u^alpha   where u ~ Uniform(0,1)
+       alpha < 1  →  PDF = (1/alpha) * t^(1/alpha - 1), increasing with t
+       alpha = 0.38 gives a clear sparse-top / dense-bottom gradient.
+
+       x spread widens slightly toward the bottom so the density feels
+       organic rather than uniformly banded.                             */
+    function layeredY(H, pad) {
+      const alpha = 0.38;
+      return pad + (H - pad * 2) * Math.pow(Math.random(), alpha);
+    }
+
     function buildGraph() {
       nodes = []; edges = []; signals = []; flashes = [];
 
-      const count  = Math.max(120, (W * H / 5000)|0);
-      const connR  = Math.min(W, H) * 0.155;
-      const minSep = Math.min(W, H) * 0.030;
+      /* ~40% more nodes than the uniform version to fill the dense bottom */
+      const count  = Math.max(160, (W * H / 3600)|0);
+      const connR  = Math.min(W, H) * 0.150;
+      /* smaller minSep so the dense bottom region can pack tighter */
+      const minSep = Math.min(W, H) * 0.025;
       const maxDeg = 5, pad = 40;
 
       let tries = 0;
-      while (nodes.length < count && tries < count * 25) {
+      while (nodes.length < count && tries < count * 30) {
         tries++;
-        const x = pad + Math.random() * (W - pad*2);
-        const y = pad + Math.random() * (H - pad*2);
+        /* x: uniform with slight noise — wider spread toward bottom */
+        const yNorm = Math.random(); // 0 = top, 1 = bottom (for spread calc)
+        const spreadFactor = 0.7 + yNorm * 0.3; // 0.7 at top → 1.0 at bottom
+        const xRange = (W - pad * 2) * spreadFactor;
+        const xOff   = (W - pad * 2 - xRange) / 2;
+        const x = pad + xOff + Math.random() * xRange;
+        const y = layeredY(H, pad);
+
         let ok = true;
         for (const n of nodes) {
           const dx = n.x - x, dy = n.y - y;
@@ -192,7 +212,6 @@
       }
     }
 
-    /* ── Fire a heat signal ── */
     function fire(x, y, ch = 'green', strength = 1.0) {
       const R   = Math.min(W, H) * 0.07;
       const now = performance.now();
@@ -209,7 +228,6 @@
       }
     }
 
-    /* ── Simulation step ── */
     function processSignals() {
       const now  = performance.now();
       const next = [];
@@ -217,10 +235,6 @@
         if (s.arrivalMs > now) { next.push(s); continue; }
         const n  = nodes[s.nodeIdx];
         const ek = s.ch === 'orange' ? 'energyO' : 'energyG';
-        // Compare against current energy, not a stored peak threshold.
-        // Reflected signals are always weaker (HOP_DECAY^2 per round-trip),
-        // so this prevents cycles while allowing the next pulse to propagate
-        // as soon as the previous one has partially decayed.
         if (s.strength > n[ek]) {
           n[ek] = Math.min(1, s.strength);
           const child = s.strength * HOP_DECAY;
@@ -243,7 +257,6 @@
       }
     }
 
-    /* ── Draw ── */
     function drawFlashes() {
       const now = performance.now();
       flashes = flashes.filter(f => {
@@ -295,21 +308,21 @@
     function drawNodes() {
       for (const n of nodes) {
         const res = resolveRgb(n.energyO, n.energyG);
+        const pulse = 1 + 0.05 * Math.sin(t * 0.7 + n.phase);
 
-        if (!res) {
-          /* Resting — dim with gentle breathing */
-          const pulse = 1 + 0.05 * Math.sin(t * 0.7 + n.phase);
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, n.r * pulse, 0, Math.PI * 2);
-          ctx.fillStyle   = 'rgba(30,52,88,0.40)';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(52,82,145,0.15)';
-          ctx.lineWidth   = 0.5;
-          ctx.stroke();
-        } else {
+        /* Always draw the resting base so nodes never dip below ambient
+           brightness as energy decays — prevents the dark-then-pop artifact. */
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r * pulse, 0, Math.PI * 2);
+        ctx.fillStyle   = 'rgba(30,52,88,0.40)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(52,82,145,0.15)';
+        ctx.lineWidth   = 0.5;
+        ctx.stroke();
+
+        if (res) {
           const { rgb: [r, g, b], e } = res;
 
-          /* Radial glow halo */
           const glowR = n.r * (4 + e * 8);
           const glow  = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowR);
           glow.addColorStop(0,    `rgba(${r},${g},${b},${0.48 * e})`);
@@ -320,10 +333,12 @@
           ctx.fillStyle = glow;
           ctx.fill();
 
-          /* Bright core */
+          /* Fade core opacity with energy so it doesn't paint a near-black
+             circle over the resting base as the pulse decays to zero. */
+          const coreAlpha = 0.92 * Math.min(1, e / 0.15);
           ctx.beginPath();
           ctx.arc(n.x, n.y, n.r * (1 + e * 0.55), 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${r},${g},${b},0.92)`;
+          ctx.fillStyle = `rgba(${r},${g},${b},${coreAlpha})`;
           ctx.fill();
         }
       }
@@ -340,10 +355,15 @@
       raf = requestAnimationFrame(frame);
     }
 
-    /* ── Events ── */
+    function nextClickColor() {
+      clickIdx = (clickIdx + 1) % CLICK_CYCLE.length;
+      clickCh  = CLICK_CYCLE[clickIdx];
+    }
+
     canvas.addEventListener('click', e => {
       const r = canvas.getBoundingClientRect();
       fire(e.clientX - r.left, e.clientY - r.top, 'green');
+      nextClickColor();
     });
 
     canvas.addEventListener('touchstart', e => {
@@ -352,9 +372,9 @@
       for (const touch of e.changedTouches) {
         fire(touch.clientX - r.left, touch.clientY - r.top, 'green');
       }
+      nextClickColor();
     }, { passive: false });
 
-    /* ── Init ── */
     function init() {
       W = canvas.width  = window.innerWidth;
       H = canvas.height = window.innerHeight;
@@ -370,22 +390,16 @@
     init();
     frame();
 
-    /* Intro pulse at 1.3s — orange, shows the network before text fully appears */
-    setTimeout(() => fire(W / 2, H / 2, 'orange', 1.0), 1300);
+    /* Every 10s fire a pulse from a random node in the top 22% of the canvas.
+       Uses the orange channel so it's visually distinct from click pulses. */
+    setInterval(() => {
+      const cutoff = H * 0.22;
+      const top = nodes.filter(n => n.y < cutoff);
+      if (top.length === 0) return;
+      const n = top[Math.floor(Math.random() * top.length)];
+      fire(n.x, n.y, 'orange', 1.0);
+    }, 10000);
 
-    /* Once the fade-in animation completes (~3.7s), switch text to pulsing mode
-       and start the repeating orange auto-pulse from center.
-       CSS textPulse peaks at 38% ≈ 1330ms; we fire the network ~200ms after
-       the CSS cycle starts so the glow and the heat wave peak feel simultaneous. */
-    setTimeout(() => {
-      document.querySelector('.coming-soon').classList.add('pulsing');
-
-      function autoPulse() {
-        setTimeout(() => fire(W / 2, H / 2, 'orange', 1.0), 200);
-      }
-      autoPulse();
-      setInterval(autoPulse, PULSE_MS);
-    }, 3700);
   })();
   </script>
 </body>
