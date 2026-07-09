@@ -17,6 +17,24 @@
     --green:     #8fd300;
     --red:       #ef3d69;
     --gray:      #e3e4e5;
+    --vignette-a: rgba(7,12,20,0.55);
+    --vignette-b: rgba(7,12,20,0.25);
+    --vignette-c: rgba(7,12,20,0.85);
+  }
+
+  :root[data-theme="light"]{
+    --bg:        #F4F1EA;
+    --panel:     rgba(255, 255, 255, 0.72);
+    --ink:       #1B1B1A;
+    --ink-dim:   #55554E;
+    --line:      rgba(60, 60, 50, 0.14);
+    --yellow:    #c98a10;
+    --green:     #5c8a00;
+    --red:       #c22a52;
+    --gray:      #3a3a38;
+    --vignette-a: rgba(244,241,234,0.55);
+    --vignette-b: rgba(244,241,234,0.25);
+    --vignette-c: rgba(244,241,234,0.85);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,6 +47,7 @@
     background: var(--bg);
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    transition: background 0.35s ease, color 0.35s ease;
   }
 
   canvas#net {
@@ -44,8 +63,9 @@
     z-index: 1;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(7,12,20,0.55) 0%, transparent 60%),
-      linear-gradient(180deg, rgba(7,12,20,0.25) 0%, rgba(7,12,20,0.55) 40%, rgba(7,12,20,0.85) 100%);
+      radial-gradient(ellipse 90% 60% at 50% 0%, var(--vignette-b) 0%, transparent 60%),
+      linear-gradient(180deg, var(--vignette-b) 0%, var(--vignette-a) 40%, var(--vignette-c) 100%);
+    transition: background 0.35s ease;
   }
 
   main {
@@ -58,7 +78,8 @@
   }
 
   main a,
-  main .card {
+  main .card,
+  main button {
     pointer-events: auto;
   }
 
@@ -73,6 +94,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 28px 0;
+    gap: 16px;
   }
 
   .brand {
@@ -90,6 +112,12 @@
     height: 34px;
     display: block;
     filter: drop-shadow(0 0 10px rgba(242, 148, 12, 0.20));
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
   }
 
   .affiliations {
@@ -116,24 +144,26 @@
     color: var(--ink);
   }
 
-  nav.links {
+  .theme-toggle {
     display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
   }
 
-  nav.links a {
-    color: var(--ink-dim);
-    text-decoration: none;
-    font-size: 0.82rem;
-    letter-spacing: 0.03em;
-    border-bottom: 1px solid transparent;
-    transition: color 0.2s ease, border-color 0.2s ease;
-  }
-
-  nav.links a:hover {
-    color: var(--yellow);
+  .theme-toggle:hover {
     border-color: var(--yellow);
+    color: var(--yellow);
+    transform: scale(1.06);
   }
 
   section.hero {
@@ -198,6 +228,10 @@
     text-decoration: underline;
     text-decoration-color: rgba(238,233,224,0.55);
     text-underline-offset: 3px;
+  }
+
+  :root[data-theme="light"] .lede .underline {
+    text-decoration-color: rgba(27,27,26,0.4);
   }
 
   @keyframes rise {
@@ -349,10 +383,15 @@
           <img class="brand-logo" src="assets/logo-lab.svg" alt="" aria-hidden="true" />
           <span>GARRIDO LAB</span>
         </div>
-        <span class="affiliations">
-          <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a>
-          <a href="https://www.uco.es" target="_blank" rel="noopener">Universidad de Córdoba</a>
-        </span>
+        <div class="header-right">
+          <span class="affiliations">
+            <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a>
+            <a href="https://www.uco.es" target="_blank" rel="noopener">Universidad de Córdoba</a>
+          </span>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme">
+            <span id="themeIcon">&#9789;</span>
+          </button>
+        </div>
       </header>
 
       <section class="hero">
@@ -437,6 +476,34 @@
 
   <script>
   (() => {
+    /* ---- Theme handling ------------------------------------------------ */
+    const root        = document.documentElement;
+    const toggleBtn   = document.getElementById('themeToggle');
+    const themeIcon   = document.getElementById('themeIcon');
+    const STORAGE_KEY = 'garridolab-theme';
+
+    function applyTheme(theme) {
+      root.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'light' ? '☀' : '☽'; // sun / crescent moon
+      if (window.setNetworkTheme) window.setNetworkTheme(theme);
+    }
+
+    let theme = localStorage.getItem(STORAGE_KEY) || 'light';
+    applyTheme(theme);
+
+    toggleBtn.addEventListener('click', () => {
+      theme = theme === 'light' ? 'dark' : 'light';
+      localStorage.setItem(STORAGE_KEY, theme);
+      applyTheme(theme);
+    });
+
+    /* ---- Network background --------------------------------------------
+       Node/edge base colors and the thermal ramps used for pulses need
+       their own light-mode variants: on a light background, colors must
+       start from a pale neutral tone and darken as the network's resting
+       lines/nodes, while pulses still ramp up into the same vivid
+       orange/green accents so the "lightning" reads consistently in both
+       themes. ---------------------------------------------------------- */
     const canvas = document.getElementById('net');
     const ctx    = canvas.getContext('2d');
     let W, H, t = 0, raf;
@@ -452,25 +519,63 @@
     let signals = [];
     let flashes = [];
 
-    const PAL = {
-      orange: [
-        [  7,  12,  20 ],
-        [ 88,  27,   5 ],
-        [210,  72,   8 ],
-        [242, 148,  12 ],
-        [255, 220,  90 ],
-      ],
-      green: [
-        [  7,  12,  20 ],
-        [  5,  46,  19 ],
-        [ 12, 105,  40 ],
-        [ 22, 158,  65 ],
-        [ 55, 210,  98 ],
-      ],
+    const THEMES = {
+      dark: {
+        edgeDim:    [ 40,  65, 120],
+        edgeDimA:   0.08,
+        nodeFill:   'rgba(30,52,88,0.40)',
+        nodeStroke: 'rgba(52,82,145,0.15)',
+        PAL: {
+          orange: [
+            [  7,  12,  20 ],
+            [ 88,  27,   5 ],
+            [210,  72,   8 ],
+            [242, 148,  12 ],
+            [255, 220,  90 ],
+          ],
+          green: [
+            [  7,  12,  20 ],
+            [  5,  46,  19 ],
+            [ 12, 105,  40 ],
+            [ 22, 158,  65 ],
+            [ 55, 210,  98 ],
+          ],
+        },
+      },
+      light: {
+        edgeDim:    [140, 130, 110],
+        edgeDimA:   0.16,
+        nodeFill:   'rgba(120,110,90,0.28)',
+        nodeStroke: 'rgba(90,85,70,0.20)',
+        PAL: {
+          orange: [
+            [244, 241, 234],
+            [235, 150,  70],
+            [222,  96,  20],
+            [196,  68,   6],
+            [140,  38,   4],
+          ],
+          green: [
+            [244, 241, 234],
+            [150, 205,  90],
+            [ 90, 165,  40],
+            [ 55, 128,  22],
+            [ 25,  90,   8],
+          ],
+        },
+      },
+    };
+
+    let themeName = 'dark';
+    let THEME = THEMES.dark;
+
+    window.setNetworkTheme = function (name) {
+      themeName = THEMES[name] ? name : 'dark';
+      THEME = THEMES[themeName];
     };
 
     function thermalRgb(e, ch) {
-      const stops = PAL[ch];
+      const stops = THEME.PAL[ch];
       const x = Math.max(0, Math.min(0.9999, e)) * (stops.length - 1);
       const i = x | 0, f = x - i;
       const [r0,g0,b0] = stops[i], [r1,g1,b1] = stops[i + 1];
@@ -619,6 +724,7 @@
     }
 
     function drawEdges() {
+      const [dr, dg, db] = THEME.edgeDim;
       for (const { a, b } of edges) {
         const na = nodes[a], nb = nodes[b];
         const ra = resolveRgb(na.energyO, na.energyG);
@@ -628,18 +734,18 @@
           ctx.beginPath();
           ctx.moveTo(na.x, na.y);
           ctx.lineTo(nb.x, nb.y);
-          ctx.strokeStyle = 'rgba(40,65,120,0.08)';
+          ctx.strokeStyle = `rgba(${dr},${dg},${db},${THEME.edgeDimA})`;
           ctx.lineWidth   = 0.55;
           ctx.stroke();
         } else {
-          const ca = ra ? ra.rgb : [40, 65, 120];
+          const ca = ra ? ra.rgb : THEME.edgeDim;
           const ea = ra ? ra.e   : 0;
-          const cb = rb ? rb.rgb : [40, 65, 120];
+          const cb = rb ? rb.rgb : THEME.edgeDim;
           const eb = rb ? rb.e   : 0;
 
           const grad = ctx.createLinearGradient(na.x, na.y, nb.x, nb.y);
-          grad.addColorStop(0, `rgba(${ca[0]},${ca[1]},${ca[2]},${ea > 0.01 ? 0.10 + ea*0.90 : 0.05})`);
-          grad.addColorStop(1, `rgba(${cb[0]},${cb[1]},${cb[2]},${eb > 0.01 ? 0.10 + eb*0.90 : 0.05})`);
+          grad.addColorStop(0, `rgba(${ca[0]},${ca[1]},${ca[2]},${ea > 0.01 ? 0.10 + ea*0.90 : THEME.edgeDimA})`);
+          grad.addColorStop(1, `rgba(${cb[0]},${cb[1]},${cb[2]},${eb > 0.01 ? 0.10 + eb*0.90 : THEME.edgeDimA})`);
           ctx.beginPath();
           ctx.moveTo(na.x, na.y);
           ctx.lineTo(nb.x, nb.y);
@@ -657,9 +763,9 @@
 
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r * pulse, 0, Math.PI * 2);
-        ctx.fillStyle   = 'rgba(30,52,88,0.40)';
+        ctx.fillStyle   = THEME.nodeFill;
         ctx.fill();
-        ctx.strokeStyle = 'rgba(52,82,145,0.15)';
+        ctx.strokeStyle = THEME.nodeStroke;
         ctx.lineWidth   = 0.5;
         ctx.stroke();
 
@@ -720,6 +826,7 @@
       resizeTimer = setTimeout(() => { cancelAnimationFrame(raf); init(); frame(); }, 150);
     });
 
+    window.setNetworkTheme(theme);
     init();
     frame();
 
