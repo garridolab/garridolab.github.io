@@ -96,8 +96,7 @@
     display: flex;
     align-items: center;
     gap: 18px;
-    padding-left: 18px;
-    border-left: 1px solid var(--line);
+    flex-wrap: wrap;
   }
 
   .affiliations a {
@@ -181,16 +180,6 @@
     animation: rise 1.1s cubic-bezier(0.16,1,0.3,1) 0.32s forwards;
   }
 
-  .mission-label {
-    margin-top: 30px;
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--green);
-    opacity: 0;
-    animation: rise 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
-  }
-
   .lede {
     margin-top: 28px;
     font-size: 1rem;
@@ -203,9 +192,11 @@
 
   .lede .highlight {
     font-weight: 600;
-    color: var(--yellow);
+  }
+
+  .lede .underline {
     text-decoration: underline;
-    text-decoration-color: rgba(251,188,48,0.55);
+    text-decoration-color: rgba(238,233,224,0.55);
     text-underline-offset: 3px;
   }
 
@@ -231,12 +222,6 @@
     font-family: "Palatino Linotype", "Palatino", "Book Antiqua", Georgia, serif;
     font-weight: 400;
     font-size: clamp(1.4rem, 3vw, 1.9rem);
-  }
-
-  .section-num {
-    font-size: 0.8rem;
-    color: var(--ink-dim);
-    letter-spacing: 0.08em;
   }
 
   .lines {
@@ -279,21 +264,6 @@
     font-size: 0.92rem;
     line-height: 1.65;
     color: var(--ink-dim);
-  }
-
-  .keywords {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .keywords span {
-    font-size: 0.8rem;
-    color: var(--ink);
-    border: 1px solid var(--line);
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.03);
   }
 
   .pi {
@@ -363,7 +333,7 @@
   footer a:hover { color: var(--yellow); }
 
   @media (prefers-reduced-motion: reduce) {
-    .eyebrow, h1, .mission-label, .lede { animation: none; opacity: 1; }
+    .eyebrow, h1, .lede { animation: none; opacity: 1; }
     html { scroll-behavior: auto; }
   }
 </style>
@@ -378,45 +348,40 @@
         <div class="brand">
           <img class="brand-logo" src="assets/logo-lab.svg" alt="" aria-hidden="true" />
           <span>GARRIDO LAB</span>
-          <span class="affiliations">
-            <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a>
-            <a href="https://www.uco.es" target="_blank" rel="noopener">Universidad de Córdoba</a>
-          </span>
         </div>
-        <nav class="links">
-          <a href="https://www.garridolab.org" target="_blank" rel="noopener">garridolab.org</a>
-          <a href="https://github.com/garridolab" target="_blank" rel="noopener">GitHub</a>
-        </nav>
+        <span class="affiliations">
+          <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a>
+          <a href="https://www.uco.es" target="_blank" rel="noopener">Universidad de Córdoba</a>
+        </span>
       </header>
 
       <section class="hero">
         <span class="eyebrow"><span class="dot"></span>Starting September 2026</span>
         <h1>Translational Systems Biology</h1>
-        <p class="mission-label">Mission</p>
         <p class="lede">
           <span class="highlight">We aim to transform large-scale molecular data into actionable biomedical knowledge.</span>
           We develop and apply computational approaches to model complex biological systems,
-          with a particular focus on understanding how cells respond to therapeutic
-          perturbations, process environmental signals, and communicate with their surroundings,
-          generating testable hypotheses and predictive models to inform translational research
+          studying signal processing from a <span class="underline">protein-centric perspective</span>, with a particular
+          focus on understanding how cells respond to therapeutic perturbations, process
+          environmental signals, and communicate with their surroundings, generating
+          testable hypotheses and predictive models to inform translational research
           and therapeutic decision-making.
         </p>
       </section>
 
       <section id="research">
         <div class="section-head">
-          <h2>Research lines</h2>
-          <span class="section-num">01</span>
+          <h2>Our Research</h2>
         </div>
         <div class="lines">
           <div class="card">
             <span class="tag">Proteomics</span>
             <h3>Studying signal transmission with LC-MS/MS</h3>
             <p>
-              Scalable LC-MS/MS-based proteomics and phosphoproteomics workflows capture
-              molecular snapshots of biological samples under basal and perturbed conditions,
-              giving quantitative insight into signaling pathways, cellular states, and
-              treatment-induced molecular responses.
+              We develop and apply scalable LC-MS/MS-based proteomics and phosphoproteomics
+              workflows to capture molecular snapshots of biological samples under basal and
+              perturbed conditions, gaining quantitative insight into signaling pathways,
+              cellular states, and treatment-induced molecular responses.
             </p>
           </div>
           <div class="card">
@@ -442,25 +407,9 @@
         </div>
       </section>
 
-      <section id="keywords">
-        <div class="section-head">
-          <h2>Keywords</h2>
-          <span class="section-num">02</span>
-        </div>
-        <div class="keywords">
-          <span>Systems Biology</span>
-          <span>Computational Biology</span>
-          <span>Bioinformatics</span>
-          <span>Multi-omics</span>
-          <span>Proteomics</span>
-          <span>Cellular Signaling</span>
-        </div>
-      </section>
-
       <section id="pi">
         <div class="section-head">
           <h2>Principal investigator</h2>
-          <span class="section-num">03</span>
         </div>
         <div class="pi">
           <div class="pi-info">
@@ -497,7 +446,7 @@
     const HOP_DECAY   = 0.79;
     const MIN_ENERGY  = 0.030;
     const FRAME_DECAY = 0.9940;
-    const AUTO_PULSE_MS = 2800;
+    const AUTO_PULSE_MS = 5200;
 
     let nodes   = [];
     let edges   = [];
@@ -614,21 +563,15 @@
       }
     }
 
-    /* Auto pulses originate from three distinct random nodes anywhere in
-       the network, not a fixed point — keeps the background feeling
-       alive and organic. */
+    /* Auto pulse originates from a single random node anywhere in the
+       network, not a fixed point — keeps the background feeling alive
+       and organic without overlapping with click-triggered pulses. */
     function fireRandom() {
       if (nodes.length === 0) return;
-      const count  = Math.min(3, nodes.length);
-      const picked = new Set();
-      while (picked.size < count) {
-        picked.add(Math.floor(Math.random() * nodes.length));
-      }
-      for (const idx of picked) {
-        const n  = nodes[idx];
-        const ch = Math.random() < 0.5 ? 'orange' : 'green';
-        fire(n.x, n.y, ch, 1.0);
-      }
+      const idx = Math.floor(Math.random() * nodes.length);
+      const n   = nodes[idx];
+      const ch  = Math.random() < 0.5 ? 'orange' : 'green';
+      fire(n.x, n.y, ch, 1.0);
     }
 
     function processSignals() {
