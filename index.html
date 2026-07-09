@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Translational Systems Biology | Garrido Lab</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo-lab.svg" />
 <meta name="description" content="A new research group starting September 2026 at IMIBIC: Translational Systems Biology, integrating multi-omics data and computational modeling to understand cellular signaling and predict response to perturbation." />
 <style>
   :root{
@@ -81,6 +82,38 @@
     font-family: "Palatino Linotype", "Palatino", "Book Antiqua", Georgia, serif;
     letter-spacing: 0.04em;
     font-size: 1.05rem;
+    color: var(--ink);
+  }
+
+  .brand-logo {
+    width: 34px;
+    height: 34px;
+    display: block;
+    filter: drop-shadow(0 0 10px rgba(242, 148, 12, 0.20));
+  }
+
+  .affiliations {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-left: 18px;
+    border-left: 1px solid var(--line);
+  }
+
+  .affiliations a {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.2s ease, color 0.2s ease;
+  }
+
+  .affiliations a:hover {
+    opacity: 1;
     color: var(--ink);
   }
 
@@ -343,10 +376,16 @@
     <div class="wrap">
       <header class="site">
         <div class="brand">
+          <img class="brand-logo" src="assets/logo-lab.svg" alt="" aria-hidden="true" />
           <span>GARRIDO LAB</span>
+          <span class="affiliations">
+            <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a>
+            <a href="https://www.uco.es" target="_blank" rel="noopener">Universidad de Córdoba</a>
+          </span>
         </div>
         <nav class="links">
           <a href="https://www.garridolab.org" target="_blank" rel="noopener">garridolab.org</a>
+          <a href="https://github.com/garridolab" target="_blank" rel="noopener">GitHub</a>
         </nav>
       </header>
 
