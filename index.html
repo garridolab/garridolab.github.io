@@ -1,62 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Garrido Lab — Coming Soon</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Translational Systems Biology | Garrido Lab</title>
+<meta name="description" content="A new research group starting September 2026 at IMIBIC: Translational Systems Biology, integrating multi-omics data and computational modeling to understand cellular signaling and predict response to perturbation." />
+<style>
+  :root{
+    --bg:        #070C14;
+    --panel:     rgba(10, 16, 26, 0.72);
+    --ink:       #EEE9E0;
+    --ink-dim:   #A9B2C3;
+    --line:      rgba(148, 168, 210, 0.18);
+    --yellow:    #fbbc30;
+    --green:     #8fd300;
+    --red:       #ef3d69;
+    --gray:      #e3e4e5;
+  }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #070C14;
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    canvas {
-      position: fixed;
-      inset: 0;
-      display: block;
-      cursor: crosshair;
-    }
+  html { scroll-behavior: smooth; }
 
-    .stage {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
 
-    .coming-soon {
-      font-family: "Palatino Linotype", "Palatino", "Book Antiqua", Georgia, serif;
-      font-weight: 400;
-      font-size: clamp(2rem, 6vw, 5rem);
-      letter-spacing: 0.16em;
-      color: #EEE9E0;
-      text-align: center;
-      text-wrap: balance;
-      opacity: 0;
-      animation: rise 3s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards;
-    }
+  canvas#net {
+    position: fixed;
+    inset: 0;
+    display: block;
+    z-index: 0;
+  }
 
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(7,12,20,0.55) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(7,12,20,0.25) 0%, rgba(7,12,20,0.55) 40%, rgba(7,12,20,0.85) 100%);
+  }
 
-    @media (prefers-reduced-motion: reduce) {
-      .coming-soon { animation: none; opacity: 1; }
-    }
-  </style>
+  main {
+    position: relative;
+    z-index: 2;
+    /* Let clicks pass through to the canvas so background lightning still
+       fires anywhere over the page; only interactive/info elements below
+       opt back in with pointer-events: auto. */
+    pointer-events: none;
+  }
+
+  main a,
+  main .card {
+    pointer-events: auto;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  header.site {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: "Palatino Linotype", "Palatino", "Book Antiqua", Georgia, serif;
+    letter-spacing: 0.04em;
+    font-size: 1.05rem;
+    color: var(--ink);
+  }
+
+  nav.links {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  nav.links a {
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  nav.links a:hover {
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+
+  section.hero {
+    min-height: 78vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 0 40px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--yellow);
+    background: rgba(251,188,48,0.08);
+    border: 1px solid rgba(251,188,48,0.35);
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: rise 1.1s cubic-bezier(0.16,1,0.3,1) 0.15s forwards;
+  }
+
+  .eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 0 0 10px var(--yellow);
+  }
+
+  h1 {
+    font-family: "Palatino Linotype", "Palatino", "Book Antiqua", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1.12;
+    letter-spacing: 0.01em;
+    max-width: 14ch;
+    opacity: 0;
+    animation: rise 1.1s cubic-bezier(0.16,1,0.3,1) 0.32s forwards;
+  }
+
+  .mission-label {
+    margin-top: 30px;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green);
+    opacity: 0;
+    animation: rise 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+  }
+
+  .lede {
+    margin-top: 28px;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--ink);
+    max-width: 62ch;
+    opacity: 0;
+    animation: rise 1.1s cubic-bezier(0.16,1,0.3,1) 0.68s forwards;
+  }
+
+  .lede .highlight {
+    font-weight: 600;
+    color: var(--yellow);
+    text-decoration: underline;
+    text-decoration-color: rgba(251,188,48,0.55);
+    text-underline-offset: 3px;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  section {
+    padding: 64px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 34px;
+  }
+
+  h2 {
+    font-family: "Palatino Linotype", "Palatino", "Book Antiqua", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+  }
+
+  .section-num {
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .lines {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 24px;
+    backdrop-filter: blur(6px);
+  }
+
+  .card .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--ink);
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  .card:nth-child(1) .tag { background: var(--yellow); }
+  .card:nth-child(2) .tag { background: var(--green); }
+  .card:nth-child(3) .tag { background: var(--red); color: var(--ink); }
+
+  .card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .card p {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--ink-dim);
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .keywords span {
+    font-size: 0.8rem;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .pi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pi-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .pi-info p {
+    color: var(--ink-dim);
+    font-size: 0.9rem;
+    margin-top: 4px;
+    max-width: 42ch;
+    line-height: 1.6;
+  }
+
+  .pi-info p a {
+    color: var(--ink-dim);
+    text-decoration: underline;
+  }
+
+  .pi-info p a:hover {
+    color: var(--green);
+  }
+
+  .pi-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pi-links a {
+    font-size: 0.82rem;
+    color: var(--ink);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    padding: 8px 16px;
+    border-radius: 999px;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+
+  .pi-links a:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(143,211,0,0.06);
+  }
+
+  footer {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+  }
+
+  footer a { color: var(--ink-dim); }
+  footer a:hover { color: var(--yellow); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow, h1, .mission-label, .lede { animation: none; opacity: 1; }
+    html { scroll-behavior: auto; }
+  }
+</style>
 </head>
 <body>
   <canvas id="net"></canvas>
-  <div class="stage">
-    <p class="coming-soon">Coming soon&hellip;</p>
-  </div>
+  <div class="vignette"></div>
+
+  <main>
+    <div class="wrap">
+      <header class="site">
+        <div class="brand">
+          <span>GARRIDO LAB</span>
+        </div>
+        <nav class="links">
+          <a href="https://www.garridolab.org" target="_blank" rel="noopener">garridolab.org</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <span class="eyebrow"><span class="dot"></span>Starting September 2026</span>
+        <h1>Translational Systems Biology</h1>
+        <p class="mission-label">Mission</p>
+        <p class="lede">
+          <span class="highlight">We aim to transform large-scale molecular data into actionable biomedical knowledge.</span>
+          We develop and apply computational approaches to model complex biological systems,
+          with a particular focus on understanding how cells respond to therapeutic
+          perturbations, process environmental signals, and communicate with their surroundings,
+          generating testable hypotheses and predictive models to inform translational research
+          and therapeutic decision-making.
+        </p>
+      </section>
+
+      <section id="research">
+        <div class="section-head">
+          <h2>Research lines</h2>
+          <span class="section-num">01</span>
+        </div>
+        <div class="lines">
+          <div class="card">
+            <span class="tag">Proteomics</span>
+            <h3>Studying signal transmission with LC-MS/MS</h3>
+            <p>
+              Scalable LC-MS/MS-based proteomics and phosphoproteomics workflows capture
+              molecular snapshots of biological samples under basal and perturbed conditions,
+              giving quantitative insight into signaling pathways, cellular states, and
+              treatment-induced molecular responses.
+            </p>
+          </div>
+          <div class="card">
+            <span class="tag">Multi-omics &amp; prior knowledge</span>
+            <h3>Integration with structured biological knowledge</h3>
+            <p>
+              We integrate large-scale molecular readouts, including genomics, transcriptomics,
+              proteomics, phosphoproteomics, and metabolomics, with pathways, regulatory
+              networks, and functional annotations to improve interpretation and prioritize
+              hypotheses for experimental follow-up.
+            </p>
+          </div>
+          <div class="card">
+            <span class="tag">AI &amp; modeling</span>
+            <h3>Predictive modeling of perturbations</h3>
+            <p>
+              Our long-term goal is to build accurate, scalable, and interpretable models
+              that simulate perturbations in biological systems, learning from growing
+              perturbational datasets to predict how cells and tissues respond to drugs,
+              genetic alterations, and environmental change.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="keywords">
+        <div class="section-head">
+          <h2>Keywords</h2>
+          <span class="section-num">02</span>
+        </div>
+        <div class="keywords">
+          <span>Systems Biology</span>
+          <span>Computational Biology</span>
+          <span>Bioinformatics</span>
+          <span>Multi-omics</span>
+          <span>Proteomics</span>
+          <span>Cellular Signaling</span>
+        </div>
+      </section>
+
+      <section id="pi">
+        <div class="section-head">
+          <h2>Principal investigator</h2>
+          <span class="section-num">03</span>
+        </div>
+        <div class="pi">
+          <div class="pi-info">
+            <h3>Martín Garrido-Rodríguez</h3>
+            <p>
+              <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a> (Maimonides Biomedical Research Institute of Córdoba), and the
+              <a href="https://www.uco.es" target="_blank" rel="noopener">University of Córdoba</a>
+            </p>
+          </div>
+          <div class="pi-links">
+            <a href="https://scholar.google.es/citations?user=UAg2BkUAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+            <a href="https://orcid.org/0000-0003-4125-5643" target="_blank" rel="noopener">ORCID</a>
+            <a href="https://github.com/martingarridorc" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://bsky.app/profile/martingarridorc.bsky.social" target="_blank" rel="noopener">Bluesky</a>
+            <a href="https://x.com/martingarridorc" target="_blank" rel="noopener">X</a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>© 2026 Garrido Lab</span>
+        <span>More info at <a href="https://www.garridolab.org" target="_blank" rel="noopener">garridolab.org</a></span>
+      </footer>
+    </div>
+  </main>
 
   <script>
   (() => {
@@ -68,6 +458,7 @@
     const HOP_DECAY   = 0.79;
     const MIN_ENERGY  = 0.030;
     const FRAME_DECAY = 0.9940;
+    const AUTO_PULSE_MS = 2800;
 
     let nodes   = [];
     let edges   = [];
@@ -82,20 +473,6 @@
         [242, 148,  12 ],
         [255, 220,  90 ],
       ],
-      red: [
-        [  7,  12,  20 ],
-        [ 60,   8,   8 ],
-        [150,  18,  15 ],
-        [210,  38,  28 ],
-        [255,  85,  65 ],
-      ],
-      blue: [
-        [  7,  12,  20 ],
-        [  8,  18,  62 ],
-        [ 18,  48, 145 ],
-        [ 38,  88, 205 ],
-        [ 80, 148, 255 ],
-      ],
       green: [
         [  7,  12,  20 ],
         [  5,  46,  19 ],
@@ -103,19 +480,7 @@
         [ 22, 158,  65 ],
         [ 55, 210,  98 ],
       ],
-      yellow: [
-        [  7,  12,  20 ],
-        [ 52,  38,   5 ],
-        [138, 108,  10 ],
-        [208, 168,  18 ],
-        [255, 228,  55 ],
-      ],
     };
-
-    /* Click color cycle — advances on each click/touch */
-    const CLICK_CYCLE = ['red', 'blue', 'green', 'yellow'];
-    let clickIdx = 0;
-    let clickCh  = CLICK_CYCLE[0]; // palette used to render energyG
 
     function thermalRgb(e, ch) {
       const stops = PAL[ch];
@@ -136,48 +501,30 @@
 
     function resolveRgb(eo, eg) {
       if (eo < 0.003 && eg < 0.003) return null;
-      if (eo < 0.003) return { rgb: thermalRgb(eg, clickCh),   e: eg };
-      if (eg < 0.003) return { rgb: thermalRgb(eo, 'orange'),  e: eo };
+      if (eo < 0.003) return { rgb: thermalRgb(eg, 'green'),  e: eg };
+      if (eg < 0.003) return { rgb: thermalRgb(eo, 'orange'), e: eo };
       return {
-        rgb: blendRgb(thermalRgb(eo, 'orange'), eo, thermalRgb(eg, clickCh), eg),
+        rgb: blendRgb(thermalRgb(eo, 'orange'), eo, thermalRgb(eg, 'green'), eg),
         e:   Math.max(eo, eg),
       };
     }
 
-    /* ── Layered node placement ──
-       y is sampled from a power distribution biased toward the bottom:
-         y = (H - pad*2) * u^alpha   where u ~ Uniform(0,1)
-       alpha < 1  →  PDF = (1/alpha) * t^(1/alpha - 1), increasing with t
-       alpha = 0.38 gives a clear sparse-top / dense-bottom gradient.
-
-       x spread widens slightly toward the bottom so the density feels
-       organic rather than uniformly banded.                             */
-    function layeredY(H, pad) {
-      const alpha = 0.38;
-      return pad + (H - pad * 2) * Math.pow(Math.random(), alpha);
-    }
-
+    /* Homogeneous background: nodes are scattered uniformly across the
+       whole canvas (no density gradient), so the network reads as an
+       ambient field rather than a directional illustration. */
     function buildGraph() {
       nodes = []; edges = []; signals = []; flashes = [];
 
-      /* ~40% more nodes than the uniform version to fill the dense bottom */
-      const count  = Math.max(160, (W * H / 3600)|0);
+      const count  = Math.max(140, (W * H / 4600)|0);
       const connR  = Math.min(W, H) * 0.150;
-      /* smaller minSep so the dense bottom region can pack tighter */
-      const minSep = Math.min(W, H) * 0.025;
+      const minSep = Math.min(W, H) * 0.028;
       const maxDeg = 5, pad = 40;
 
       let tries = 0;
-      while (nodes.length < count && tries < count * 30) {
+      while (nodes.length < count && tries < count * 25) {
         tries++;
-        /* x: uniform with slight noise — wider spread toward bottom */
-        const yNorm = Math.random(); // 0 = top, 1 = bottom (for spread calc)
-        const spreadFactor = 0.7 + yNorm * 0.3; // 0.7 at top → 1.0 at bottom
-        const xRange = (W - pad * 2) * spreadFactor;
-        const xOff   = (W - pad * 2 - xRange) / 2;
-        const x = pad + xOff + Math.random() * xRange;
-        const y = layeredY(H, pad);
-
+        const x = pad + Math.random() * (W - pad*2);
+        const y = pad + Math.random() * (H - pad*2);
         let ok = true;
         for (const n of nodes) {
           const dx = n.x - x, dy = n.y - y;
@@ -228,6 +575,23 @@
       }
     }
 
+    /* Auto pulses originate from three distinct random nodes anywhere in
+       the network, not a fixed point — keeps the background feeling
+       alive and organic. */
+    function fireRandom() {
+      if (nodes.length === 0) return;
+      const count  = Math.min(3, nodes.length);
+      const picked = new Set();
+      while (picked.size < count) {
+        picked.add(Math.floor(Math.random() * nodes.length));
+      }
+      for (const idx of picked) {
+        const n  = nodes[idx];
+        const ch = Math.random() < 0.5 ? 'orange' : 'green';
+        fire(n.x, n.y, ch, 1.0);
+      }
+    }
+
     function processSignals() {
       const now  = performance.now();
       const next = [];
@@ -263,11 +627,11 @@
         const age = (now - f.startMs) / 480;
         if (age >= 1) return false;
         const ease = 1 - (1 - age) * (1 - age);
-        const [r, g, b] = thermalRgb(1 - age * 0.5, f.ch);
+        const [r, g, b] = thermalRgb(1 - age * 0.35, f.ch);
         ctx.beginPath();
         ctx.arc(f.x, f.y, 4 + ease * 46, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${r},${g},${b},${(1 - age) * 0.55})`;
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = `rgba(${r},${g},${b},${(1 - age) * 0.85})`;
+        ctx.lineWidth = 1.8;
         ctx.stroke();
         return true;
       });
@@ -293,13 +657,13 @@
           const eb = rb ? rb.e   : 0;
 
           const grad = ctx.createLinearGradient(na.x, na.y, nb.x, nb.y);
-          grad.addColorStop(0, `rgba(${ca[0]},${ca[1]},${ca[2]},${ea > 0.01 ? 0.08 + ea*0.58 : 0.05})`);
-          grad.addColorStop(1, `rgba(${cb[0]},${cb[1]},${cb[2]},${eb > 0.01 ? 0.08 + eb*0.58 : 0.05})`);
+          grad.addColorStop(0, `rgba(${ca[0]},${ca[1]},${ca[2]},${ea > 0.01 ? 0.10 + ea*0.90 : 0.05})`);
+          grad.addColorStop(1, `rgba(${cb[0]},${cb[1]},${cb[2]},${eb > 0.01 ? 0.10 + eb*0.90 : 0.05})`);
           ctx.beginPath();
           ctx.moveTo(na.x, na.y);
           ctx.lineTo(nb.x, nb.y);
           ctx.strokeStyle = grad;
-          ctx.lineWidth   = 0.6 + Math.max(ea, eb) * 1.35;
+          ctx.lineWidth   = 0.6 + Math.max(ea, eb) * 2.0;
           ctx.stroke();
         }
       }
@@ -310,8 +674,6 @@
         const res = resolveRgb(n.energyO, n.energyG);
         const pulse = 1 + 0.05 * Math.sin(t * 0.7 + n.phase);
 
-        /* Always draw the resting base so nodes never dip below ambient
-           brightness as energy decays — prevents the dark-then-pop artifact. */
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r * pulse, 0, Math.PI * 2);
         ctx.fillStyle   = 'rgba(30,52,88,0.40)';
@@ -323,21 +685,19 @@
         if (res) {
           const { rgb: [r, g, b], e } = res;
 
-          const glowR = n.r * (4 + e * 8);
+          const glowR = n.r * (5 + e * 11);
           const glow  = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowR);
-          glow.addColorStop(0,    `rgba(${r},${g},${b},${0.48 * e})`);
-          glow.addColorStop(0.35, `rgba(${r},${g},${b},${0.14 * e})`);
+          glow.addColorStop(0,    `rgba(${r},${g},${b},${0.75 * e})`);
+          glow.addColorStop(0.35, `rgba(${r},${g},${b},${0.24 * e})`);
           glow.addColorStop(1,    `rgba(${r},${g},${b},0)`);
           ctx.beginPath();
           ctx.arc(n.x, n.y, glowR, 0, Math.PI * 2);
           ctx.fillStyle = glow;
           ctx.fill();
 
-          /* Fade core opacity with energy so it doesn't paint a near-black
-             circle over the resting base as the pulse decays to zero. */
-          const coreAlpha = 0.92 * Math.min(1, e / 0.15);
+          const coreAlpha = Math.min(1, e / 0.1);
           ctx.beginPath();
-          ctx.arc(n.x, n.y, n.r * (1 + e * 0.55), 0, Math.PI * 2);
+          ctx.arc(n.x, n.y, n.r * (1 + e * 0.7), 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${r},${g},${b},${coreAlpha})`;
           ctx.fill();
         }
@@ -355,25 +715,17 @@
       raf = requestAnimationFrame(frame);
     }
 
-    function nextClickColor() {
-      clickIdx = (clickIdx + 1) % CLICK_CYCLE.length;
-      clickCh  = CLICK_CYCLE[clickIdx];
-    }
-
     canvas.addEventListener('click', e => {
       const r = canvas.getBoundingClientRect();
-      fire(e.clientX - r.left, e.clientY - r.top, 'green');
-      nextClickColor();
+      fire(e.clientX - r.left, e.clientY - r.top, Math.random() < 0.5 ? 'orange' : 'green');
     });
 
     canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
       const r = canvas.getBoundingClientRect();
       for (const touch of e.changedTouches) {
-        fire(touch.clientX - r.left, touch.clientY - r.top, 'green');
+        fire(touch.clientX - r.left, touch.clientY - r.top, Math.random() < 0.5 ? 'orange' : 'green');
       }
-      nextClickColor();
-    }, { passive: false });
+    }, { passive: true });
 
     function init() {
       W = canvas.width  = window.innerWidth;
@@ -390,16 +742,8 @@
     init();
     frame();
 
-    /* Every 10s fire a pulse from a random node in the top 22% of the canvas.
-       Uses the orange channel so it's visually distinct from click pulses. */
-    setInterval(() => {
-      const cutoff = H * 0.22;
-      const top = nodes.filter(n => n.y < cutoff);
-      if (top.length === 0) return;
-      const n = top[Math.floor(Math.random() * top.length)];
-      fire(n.x, n.y, 'orange', 1.0);
-    }, 10000);
-
+    setTimeout(fireRandom, 900);
+    setInterval(fireRandom, AUTO_PULSE_MS);
   })();
   </script>
 </body>
