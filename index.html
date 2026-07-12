@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Translational Systems Biology | Garrido Lab</title>
+<title>Translational Systems Biology | Garrido-Rodriguez Lab</title>
 <link rel="icon" type="image/svg+xml" href="assets/logo-lab.svg" />
 <meta name="description" content="A new research group starting September 2026 at IMIBIC: Translational Systems Biology, integrating multi-omics data and computational modeling to understand cellular signaling and predict response to perturbation." />
 <style>
@@ -17,6 +17,9 @@
     --green:     #8fd300;
     --red:       #ef3d69;
     --gray:      #e3e4e5;
+    --tag-yellow: #8a5c0f;
+    --tag-green:  #4a6e10;
+    --tag-red:    #96233f;
     --vignette-a: rgba(7,12,20,0.55);
     --vignette-b: rgba(7,12,20,0.25);
     --vignette-c: rgba(7,12,20,0.85);
@@ -32,6 +35,9 @@
     --green:     #5c8a00;
     --red:       #c22a52;
     --gray:      #3a3a38;
+    --tag-yellow: #7a5209;
+    --tag-green:  #3e5c0a;
+    --tag-red:    #7f1c33;
     --vignette-a: rgba(244,241,234,0.55);
     --vignette-b: rgba(244,241,234,0.25);
     --vignette-c: rgba(244,241,234,0.85);
@@ -166,6 +172,23 @@
     transform: scale(1.06);
   }
 
+  @media (max-width: 560px) {
+    header.site {
+      flex-wrap: wrap;
+      row-gap: 14px;
+      padding: 22px 0;
+    }
+
+    .header-right {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .affiliations {
+      gap: 14px;
+    }
+  }
+
   section.hero {
     min-height: 78vh;
     display: flex;
@@ -284,9 +307,9 @@
     margin-bottom: 14px;
   }
 
-  .card:nth-child(1) .tag { background: var(--yellow); }
-  .card:nth-child(2) .tag { background: var(--green); }
-  .card:nth-child(3) .tag { background: var(--red); color: var(--ink); }
+  .card:nth-child(1) .tag { background: var(--tag-yellow); color: #fff; }
+  .card:nth-child(2) .tag { background: var(--tag-green); color: #fff; }
+  .card:nth-child(3) .tag { background: var(--tag-red); color: #fff; }
 
   .card h3 {
     font-size: 1.05rem;
@@ -381,7 +404,7 @@
       <header class="site">
         <div class="brand">
           <img class="brand-logo" src="assets/logo-lab.svg" alt="" aria-hidden="true" />
-          <span>GARRIDO LAB</span>
+          <span>GARRIDO-RODRIGUEZ LAB</span>
         </div>
         <div class="header-right">
           <span class="affiliations">
@@ -452,7 +475,7 @@
         </div>
         <div class="pi">
           <div class="pi-info">
-            <h3>Martín Garrido-Rodríguez</h3>
+            <h3>Martín Garrido-Rodriguez</h3>
             <p>
               <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a> (Maimonides Biomedical Research Institute of Córdoba), and the
               <a href="https://www.uco.es" target="_blank" rel="noopener">University of Córdoba</a>
@@ -469,7 +492,7 @@
       </section>
 
       <footer>
-        <span>© 2026 Garrido Lab</span>
+        <span>© 2026 Garrido-Rodriguez Lab</span>
       </footer>
     </div>
   </main>
@@ -634,9 +657,9 @@
     function buildGraph() {
       nodes = []; edges = []; signals = []; flashes = [];
 
-      const count  = Math.max(140, (W * H / 4600)|0);
-      const connR  = Math.min(W, H) * 0.150;
-      const minSep = Math.min(W, H) * 0.028;
+      const count  = Math.max(180, (W * H / 3300)|0);
+      const connR  = Math.min(W, H) * 0.140;
+      const minSep = Math.min(W, H) * 0.023;
       const maxDeg = 5, pad = 40;
 
       let tries = 0;
@@ -848,17 +871,42 @@
       }
     }, { passive: true });
 
-    function init() {
+    function resizeCanvas() {
       W = canvas.width  = window.innerWidth;
       H = canvas.height = window.innerHeight;
+    }
+
+    function init() {
+      resizeCanvas();
       buildGraph();
     }
 
+    /* Mobile browsers show/hide their address bar while scrolling, which
+       changes window.innerHeight and fires 'resize' — without this guard
+       that was rebuilding the whole graph (wiping node energy) on every
+       scroll. Only rebuild on a genuine size change (rotation, real window
+       resize); a small height-only delta just resizes the canvas buffer. */
+    let lastW = window.innerWidth;
+    let lastH = window.innerHeight;
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => { cancelAnimationFrame(raf); init(); frame(); }, 150);
-    });
+      resizeTimer = setTimeout(() => {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const widthChanged  = w !== lastW;
+        const heightChanged = Math.abs(h - lastH) > 120;
+        lastW = w;
+        lastH = h;
+        if (!widthChanged && !heightChanged) {
+          resizeCanvas();
+          return;
+        }
+        cancelAnimationFrame(raf);
+        init();
+        frame();
+      }, 150);
+    }, { passive: true });
 
     window.setNetworkTheme(theme);
     init();
