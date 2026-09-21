@@ -159,6 +159,28 @@
     color: var(--ink);
   }
 
+  .affiliations a.uco-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 50%;
+    padding: 8px 22px;
+    opacity: 1;
+    box-shadow: 0 0 0 1px var(--line);
+    transition: transform 0.2s ease;
+  }
+
+  .affiliations a.uco-badge:hover { transform: scale(1.04); }
+
+  .uco-badge img {
+    height: 34px;
+    width: auto;
+    display: block;
+  }
+
+  .uco-badge img.imibic-logo { height: 26px; }
+
   .theme-toggle {
     display: flex;
     align-items: center;
@@ -377,8 +399,12 @@
         </div>
         <div class="header-right">
           <span class="affiliations">
-            <a href="https://www.imibic.org" target="_blank" rel="noopener">IMIBIC</a>
-            <a href="https://www.uco.es" target="_blank" rel="noopener">Universidad de Córdoba</a>
+            <a class="uco-badge" href="https://www.imibic.org" target="_blank" rel="noopener" aria-label="IMIBIC">
+              <img class="imibic-logo" src="assets/logos/imibic-color.svg" alt="IMIBIC" />
+            </a>
+            <a class="uco-badge" href="https://www.uco.es" target="_blank" rel="noopener" aria-label="Universidad de Córdoba">
+              <img src="assets/logos/uco-horizontal.svg" alt="Universidad de Córdoba" />
+            </a>
           </span>
           <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme">
             <span id="themeIcon">&#9789;</span>
