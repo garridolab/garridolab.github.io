@@ -354,6 +354,112 @@
     color: var(--ink-dim);
   }
 
+  .pubs {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px 24px 26px;
+    backdrop-filter: blur(6px);
+    pointer-events: auto;
+  }
+
+  .pub-note {
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    margin-top: 18px;
+  }
+
+  .pub-tabs {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    padding: 3px;
+  }
+
+  .pub-tabs button {
+    font: inherit;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    background: none;
+    border: 0;
+    border-radius: 999px;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+
+  .pub-tabs button:hover { color: var(--ink); }
+
+  .pub-tabs button[aria-selected="true"] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .pub-list.featured { margin-top: 14px; }
+
+  .pub-year {
+    font-family: "Palatino Linotype", "Palatino", "Book Antiqua", Georgia, serif;
+    font-weight: 400;
+    font-size: 1.05rem;
+    color: var(--yellow);
+    margin: 20px 0 4px;
+  }
+
+  .pub-list { list-style: none; }
+
+  .pub-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 0 12px 14px;
+    border-left: 2px solid transparent;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pub-list li:last-child { border-bottom: 0; }
+
+  .pub-list.featured li,
+  .pub-list li.is-featured {
+    border-left-color: var(--yellow);
+    background: linear-gradient(90deg, rgba(251,188,48,0.07), transparent 70%);
+  }
+
+  .pub-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .pub-title:hover { color: var(--yellow); }
+
+  .pub-venue a {
+    color: var(--ink-dim);
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  .pub-venue a:hover { color: var(--yellow); }
+
+  .pub-authors,
+  .pub-venue {
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
+  }
+
+  .pub-authors strong { color: var(--ink); font-weight: 600; }
+
+  .pub-authors sup { font-size: 0.7em; }
+
+  @media (max-width: 560px) {
+    .pubs { padding: 6px 16px 20px; }
+  }
+
   footer {
     padding: 40px 0 60px;
     border-top: 1px solid var(--line);
@@ -463,6 +569,272 @@
         </div>
       </section>
 
+      <section id="publications">
+        <div class="section-head">
+          <h2>Publications</h2>
+          <div class="pub-tabs" role="tablist" aria-label="Publications">
+            <button type="button" role="tab" id="tab-featured" aria-controls="pubs-featured" aria-selected="false" tabindex="-1">Featured</button>
+            <button type="button" role="tab" id="tab-all" aria-controls="pubs-all" aria-selected="true">All</button>
+          </div>
+        </div>
+        <div class="pubs">
+          <div class="pub-panel" id="pubs-featured" role="tabpanel" aria-labelledby="tab-featured" hidden>
+            <ol class="pub-list featured">
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41467-026-69332-0" target="_blank" rel="noopener">Benchmarking EGF signaling pathway inference using phosphoproteomics and kinase-substrate interactions</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M<sup>†</sup></strong>, Potel CM<sup>†</sup>, Burtscher ML, Becher I, Rodriguez-Mier P, Müller-Dott S, Savitski MM, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nature Communications</em>, 17, 2071 (2026) · <a href="https://doi.org/10.1038/s41467-026-69332-0" target="_blank" rel="noopener">doi:10.1038/s41467-026-69332-0</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s42256-025-01069-9" target="_blank" rel="noopener">Unifying multi-sample network inference from prior knowledge and omics data with CORNETO</a>
+                <span class="pub-authors">Rodriguez-Mier P, <strong>Garrido-Rodriguez M<sup>†</sup></strong>, Gabor A<sup>†</sup>, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nature Machine Intelligence</em>, 7, 1168–1186 (2025) · <a href="https://doi.org/10.1038/s42256-025-01069-9" target="_blank" rel="noopener">doi:10.1038/s42256-025-01069-9</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41594-025-01485-w" target="_blank" rel="noopener">Uncovering protein glycosylation dynamics and heterogeneity using deep quantitative glycoprofiling (DQGlyco)</a>
+                <span class="pub-authors">Potel CM<sup>†</sup>, Burtscher ML<sup>†</sup>, <strong>Garrido-Rodriguez M<sup>†</sup></strong>, …, Savitski MM</span>
+                <span class="pub-venue"><em>Nature Structural &amp; Molecular Biology</em>, 32, 1111–1126 (2025) · <a href="https://doi.org/10.1038/s41594-025-01485-w" target="_blank" rel="noopener">doi:10.1038/s41594-025-01485-w</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://academic.oup.com/bioinformatics/article/doi/10.1093/bioinformatics/btaf048/8002097" target="_blank" rel="noopener">NetworkCommons: bridging data, knowledge, and methods to build and evaluate context-specific biological networks</a>
+                <span class="pub-authors">Paton V, Türei D, Ivanova O, …, Perfetto L, <strong>Garrido-Rodriguez M</strong>, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Bioinformatics</em>, 41, btaf048 (2025) · <a href="https://doi.org/10.1093/bioinformatics/btaf048" target="_blank" rel="noopener">doi:10.1093/bioinformatics/btaf048</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://academic.oup.com/nar/article/52/14/8100/7701479" target="_blank" rel="noopener">Assessing the impact of transcriptomics data analysis pipelines on downstream functional enrichment results</a>
+                <span class="pub-authors">Paton V, Ramirez Flores RO, Gabor A, Badia-i-Mompel P, Tanevski J, <strong>Garrido-Rodriguez M</strong>, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nucleic Acids Research</em>, 52, 8100–8111 (2024) · <a href="https://doi.org/10.1093/nar/gkae552" target="_blank" rel="noopener">doi:10.1093/nar/gkae552</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://link.springer.com/article/10.15252/msb.202211036" target="_blank" rel="noopener">Integrating knowledge and omics to decipher mechanisms via large‐scale models of signaling networks</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M</strong>, Zirngibl K, Ivanova O, Lobentanzer S, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Molecular Systems Biology</em>, 18, e11036 (2022) · <a href="https://doi.org/10.15252/msb.202211036" target="_blank" rel="noopener">doi:10.15252/msb.202211036</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008748" target="_blank" rel="noopener">A versatile workflow to integrate RNA-seq genomic and transcriptomic data into mechanistic models of signaling pathways</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M</strong>, Lopez-Lopez D, Ortuno FM, Peña-Chilet M, Muñoz E, Calzado MA, Dopazo J</span>
+                <span class="pub-venue"><em>PLOS Computational Biology</em>, 17, e1008748 (2021) · <a href="https://doi.org/10.1371/journal.pcbi.1008748" target="_blank" rel="noopener">doi:10.1371/journal.pcbi.1008748</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S1874391918303786" target="_blank" rel="noopener">SWATH proteomic profiling of prostate cancer cells identifies NUSAP1 as a potential molecular target for Galiellalactone</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M</strong>, Ortea I, Calzado MA, Muñoz E, García V</span>
+                <span class="pub-venue"><em>Journal of Proteomics</em>, 193, 217–229 (2019) · <a href="https://doi.org/10.1016/j.jprot.2018.10.012" target="_blank" rel="noopener">doi:10.1016/j.jprot.2018.10.012</a></span>
+              </li>
+            </ol>
+          </div>
+          <div class="pub-panel" id="pubs-all" role="tabpanel" aria-labelledby="tab-all">
+            <h4 class="pub-year">2026</h4>
+            <ol class="pub-list">
+              <li class="is-featured">
+                <a class="pub-title" href="https://www.nature.com/articles/s41467-026-69332-0" target="_blank" rel="noopener">Benchmarking EGF signaling pathway inference using phosphoproteomics and kinase-substrate interactions</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M<sup>†</sup></strong>, Potel CM<sup>†</sup>, Burtscher ML, Becher I, Rodriguez-Mier P, Müller-Dott S, Savitski MM, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nature Communications</em>, 17, 2071 (2026) · <a href="https://doi.org/10.1038/s41467-026-69332-0" target="_blank" rel="noopener">doi:10.1038/s41467-026-69332-0</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.biorxiv.org/content/10.64898/2026.02.09.704793" target="_blank" rel="noopener">Multi-omics and biophysical phosphoproteomics upon BRAF inhibition uncover functional networks of BRAFV600E-driven signaling</a>
+                <span class="pub-authors">Burtscher ML, <strong>Garrido-Rodriguez M</strong>, Mejias PAR, …, Savitski MM</span>
+                <span class="pub-venue"><em>bioRxiv (preprint)</em> (2026) · <a href="https://doi.org/10.64898/2026.02.09.704793" target="_blank" rel="noopener">doi:10.64898/2026.02.09.704793</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2025</h4>
+            <ol class="pub-list">
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41594-025-01699-y" target="_blank" rel="noopener">High-throughput peptide-centric local stability assay extends protein–ligand identification to membrane proteins, tissues and bacteria</a>
+                <span class="pub-authors">Li K, Potel CM, Becher I, Hüttmann N, <strong>Garrido-Rodriguez M</strong>, Schwarz J, Burtscher ML, Savitski MM</span>
+                <span class="pub-venue"><em>Nature Structural &amp; Molecular Biology</em>, 33, 184–192 (2025) · <a href="https://doi.org/10.1038/s41594-025-01699-y" target="_blank" rel="noopener">doi:10.1038/s41594-025-01699-y</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://dom-pubs.onlinelibrary.wiley.com/doi/10.1111/dom.16602" target="_blank" rel="noopener">Cannabidiol improves metabolic profiles and alleviates liver inflammation and fibrosis in conditions of androgenic obesity and polycystic ovary syndrome</a>
+                <span class="pub-authors">Ponce-Díaz FJ, Ruiz-Pino F, <strong>Garrido-Rodriguez M</strong>, …, Tena-Sempere M</span>
+                <span class="pub-venue"><em>Diabetes, Obesity and Metabolism</em>, 27, 6027–6031 (2025) · <a href="https://doi.org/10.1111/dom.16602" target="_blank" rel="noopener">doi:10.1111/dom.16602</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.biorxiv.org/content/10.1101/2025.09.08.674873" target="_blank" rel="noopener">ScAPE: A lightweight multitask learning baseline method to predict transcriptomic responses to perturbations</a>
+                <span class="pub-authors">Romero-Tapiador S, Rodriguez-Mier P, <strong>Garrido-Rodriguez M</strong>, Tolosana R, Morales A, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>bioRxiv (preprint)</em> (2025) · <a href="https://doi.org/10.1101/2025.09.08.674873" target="_blank" rel="noopener">doi:10.1101/2025.09.08.674873</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41418-025-01565-w" target="_blank" rel="noopener">A novel feedback loop between DYRK2 and USP28 regulates cancer homeostasis and DNA damage signaling</a>
+                <span class="pub-authors">Suanes-Cobos L, Aguilera-Ventura I, Torres-Ramos M, …, <strong>Garrido-Rodriguez M</strong>, …, Calzado MA</span>
+                <span class="pub-venue"><em>Cell Death &amp; Differentiation</em>, 33, 77–91 (2025) · <a href="https://doi.org/10.1038/s41418-025-01565-w" target="_blank" rel="noopener">doi:10.1038/s41418-025-01565-w</a></span>
+              </li>
+              <li class="is-featured">
+                <a class="pub-title" href="https://www.nature.com/articles/s42256-025-01069-9" target="_blank" rel="noopener">Unifying multi-sample network inference from prior knowledge and omics data with CORNETO</a>
+                <span class="pub-authors">Rodriguez-Mier P, <strong>Garrido-Rodriguez M<sup>†</sup></strong>, Gabor A<sup>†</sup>, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nature Machine Intelligence</em>, 7, 1168–1186 (2025) · <a href="https://doi.org/10.1038/s42256-025-01069-9" target="_blank" rel="noopener">doi:10.1038/s42256-025-01069-9</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://link.springer.com/article/10.1038/s44320-025-00116-2" target="_blank" rel="noopener">Dynamic multi-omics and mechanistic modeling approach uncovers novel mechanisms of kidney fibrosis progression</a>
+                <span class="pub-authors">Tuechler N, Burtscher ML, <strong>Garrido-Rodriguez M</strong>, …, Pepperkok R</span>
+                <span class="pub-venue"><em>Molecular Systems Biology</em>, 21, 6 (2025) · <a href="https://doi.org/10.1038/s44320-025-00116-2" target="_blank" rel="noopener">doi:10.1038/s44320-025-00116-2</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41467-025-59779-y" target="_blank" rel="noopener">Comprehensive evaluation of phosphoproteomic-based kinase activity inference</a>
+                <span class="pub-authors">Müller-Dott S, Jaehnig EJ, Munchic KP, …, <strong>Garrido-Rodriguez M</strong>, …, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nature Communications</em>, 16, 4771 (2025) · <a href="https://doi.org/10.1038/s41467-025-59779-y" target="_blank" rel="noopener">doi:10.1038/s41467-025-59779-y</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S2405471225001280" target="_blank" rel="noopener">What is the current bottleneck in mapping molecular interaction networks?</a>
+                <span class="pub-authors">Skinnider MA, Luck K, Mukhtar MS, <strong>Garrido-Rodriguez M</strong>, …, Krogan NJ</span>
+                <span class="pub-venue"><em>Cell Systems</em>, 16, 101295 (2025) · <a href="https://doi.org/10.1016/j.cels.2025.101295" target="_blank" rel="noopener">doi:10.1016/j.cels.2025.101295</a></span>
+              </li>
+              <li class="is-featured">
+                <a class="pub-title" href="https://www.nature.com/articles/s41594-025-01485-w" target="_blank" rel="noopener">Uncovering protein glycosylation dynamics and heterogeneity using deep quantitative glycoprofiling (DQGlyco)</a>
+                <span class="pub-authors">Potel CM<sup>†</sup>, Burtscher ML<sup>†</sup>, <strong>Garrido-Rodriguez M<sup>†</sup></strong>, …, Savitski MM</span>
+                <span class="pub-venue"><em>Nature Structural &amp; Molecular Biology</em>, 32, 1111–1126 (2025) · <a href="https://doi.org/10.1038/s41594-025-01485-w" target="_blank" rel="noopener">doi:10.1038/s41594-025-01485-w</a></span>
+              </li>
+              <li class="is-featured">
+                <a class="pub-title" href="https://academic.oup.com/bioinformatics/article/doi/10.1093/bioinformatics/btaf048/8002097" target="_blank" rel="noopener">NetworkCommons: bridging data, knowledge, and methods to build and evaluate context-specific biological networks</a>
+                <span class="pub-authors">Paton V, Türei D, Ivanova O, …, Perfetto L, <strong>Garrido-Rodriguez M</strong>, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Bioinformatics</em>, 41, btaf048 (2025) · <a href="https://doi.org/10.1093/bioinformatics/btaf048" target="_blank" rel="noopener">doi:10.1093/bioinformatics/btaf048</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2024</h4>
+            <ol class="pub-list">
+              <li>
+                <a class="pub-title" href="https://translational-medicine.biomedcentral.com/articles/10.1186/s12967-024-05748-w" target="_blank" rel="noopener">Etrinabdione (VCE-004.8), a B55α activator, promotes angiogenesis and arteriogenesis in critical limb ischemia</a>
+                <span class="pub-authors">García-Martín A, Prados ME, Lastres-Cubillo I, …, <strong>Garrido-Rodriguez M</strong>, …, Muñoz E</span>
+                <span class="pub-venue"><em>Journal of Translational Medicine</em>, 22, 1003 (2024) · <a href="https://doi.org/10.1186/s12967-024-05748-w" target="_blank" rel="noopener">doi:10.1186/s12967-024-05748-w</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://behavioralandbrainfunctions.biomedcentral.com/articles/10.1186/s12993-024-00256-9" target="_blank" rel="noopener">Investigation in the cannabigerol derivative VCE-003.2 as a disease-modifying agent in a mouse model of experimental synucleinopathy</a>
+                <span class="pub-authors">Burgaz S, Navarro E, Rodríguez-Carreiro S, …, <strong>Garrido-Rodriguez M</strong>, …, Fernández-Ruiz J</span>
+                <span class="pub-venue"><em>Behavioral and Brain Functions</em>, 20, 28 (2024) · <a href="https://doi.org/10.1186/s12993-024-00256-9" target="_blank" rel="noopener">doi:10.1186/s12993-024-00256-9</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.science.org/doi/10.1126/science.ado0251" target="_blank" rel="noopener">Pervasive sublethal effects of agrochemicals on insects at environmentally relevant concentrations</a>
+                <span class="pub-authors">Gandara L, Jacoby R, Laurent F, …, <strong>Garrido-Rodriguez M</strong>, …, Crocker J</span>
+                <span class="pub-venue"><em>Science</em>, 386, 446–453 (2024) · <a href="https://doi.org/10.1126/science.ado0251" target="_blank" rel="noopener">doi:10.1126/science.ado0251</a></span>
+              </li>
+              <li class="is-featured">
+                <a class="pub-title" href="https://academic.oup.com/nar/article/52/14/8100/7701479" target="_blank" rel="noopener">Assessing the impact of transcriptomics data analysis pipelines on downstream functional enrichment results</a>
+                <span class="pub-authors">Paton V, Ramirez Flores RO, Gabor A, Badia-i-Mompel P, Tanevski J, <strong>Garrido-Rodriguez M</strong>, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nucleic Acids Research</em>, 52, 8100–8111 (2024) · <a href="https://doi.org/10.1093/nar/gkae552" target="_blank" rel="noopener">doi:10.1093/nar/gkae552</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://link.springer.com/article/10.1038/s44320-024-00025-w" target="_blank" rel="noopener">Network integration of thermal proteome profiling with multi-omics data decodes PARP inhibition</a>
+                <span class="pub-authors">Burtscher ML, Gade S, <strong>Garrido-Rodriguez M</strong>, …, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Molecular Systems Biology</em>, 20, 10 (2024) · <a href="https://doi.org/10.1038/s44320-024-00025-w" target="_blank" rel="noopener">doi:10.1038/s44320-024-00025-w</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2023</h4>
+            <ol class="pub-list">
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41419-023-05724-0" target="_blank" rel="noopener">FBXW7 tumor suppressor regulation by dualspecificity tyrosine-regulated kinase 2</a>
+                <span class="pub-authors">Jiménez-Izquierdo R, Morrugares R, Suanes-Cobos L, …, <strong>Garrido-Rodriguez M</strong>, …, Calzado MA</span>
+                <span class="pub-venue"><em>Cell Death &amp; Disease</em>, 14, 202 (2023) · <a href="https://doi.org/10.1038/s41419-023-05724-0" target="_blank" rel="noopener">doi:10.1038/s41419-023-05724-0</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2022</h4>
+            <ol class="pub-list">
+              <li class="is-featured">
+                <a class="pub-title" href="https://link.springer.com/article/10.15252/msb.202211036" target="_blank" rel="noopener">Integrating knowledge and omics to decipher mechanisms via large‐scale models of signaling networks</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M</strong>, Zirngibl K, Ivanova O, Lobentanzer S, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Molecular Systems Biology</em>, 18, e11036 (2022) · <a href="https://doi.org/10.15252/msb.202211036" target="_blank" rel="noopener">doi:10.15252/msb.202211036</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41467-022-30755-0" target="_blank" rel="noopener">Comparison of methods and resources for cell-cell communication inference from single-cell RNA-Seq data</a>
+                <span class="pub-authors">Dimitrov D, Türei D, <strong>Garrido-Rodriguez M</strong>, …, Saez-Rodriguez J</span>
+                <span class="pub-venue"><em>Nature Communications</em>, 13, 3224 (2022) · <a href="https://doi.org/10.1038/s41467-022-30755-0" target="_blank" rel="noopener">doi:10.1038/s41467-022-30755-0</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.nature.com/articles/s41418-021-00845-5" target="_blank" rel="noopener">A novel CDC25A/DYRK2 regulatory switch modulates cell cycle and survival</a>
+                <span class="pub-authors">Lara-Chica M, Correa-Sáez A, Jiménez-Izquierdo R, <strong>Garrido-Rodriguez M</strong>, …, Calzado MA</span>
+                <span class="pub-venue"><em>Cell Death &amp; Differentiation</em>, 29, 105–117 (2022) · <a href="https://doi.org/10.1038/s41418-021-00845-5" target="_blank" rel="noopener">doi:10.1038/s41418-021-00845-5</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2021</h4>
+            <ol class="pub-list">
+              <li>
+                <a class="pub-title" href="https://link.springer.com/article/10.15252/msb.202110402" target="_blank" rel="noopener">Cell‐to‐cell and type‐to‐type heterogeneity of signaling networks: insights from the crowd</a>
+                <span class="pub-authors">Gabor A, Tognetti M, Driessen A, …, <strong>Garrido-Rodriguez M</strong>, …, Lee M</span>
+                <span class="pub-venue"><em>Molecular Systems Biology</em>, 17, e10402 (2021) · <a href="https://doi.org/10.15252/msb.202110402" target="_blank" rel="noopener">doi:10.15252/msb.202110402</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S0753332221007903" target="_blank" rel="noopener">EHP-101 alleviates angiotensin II-induced fibrosis and inflammation in mice</a>
+                <span class="pub-authors">García-Martín A, Navarrete C, <strong>Garrido-Rodriguez M</strong>, Prados ME, Caprioglio D, Appendino G, Muñoz E</span>
+                <span class="pub-venue"><em>Biomedicine &amp; Pharmacotherapy</em>, 142, 112007 (2021) · <a href="https://doi.org/10.1016/j.biopha.2021.112007" target="_blank" rel="noopener">doi:10.1016/j.biopha.2021.112007</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S1878747923007754" target="_blank" rel="noopener">Betulinic Acid Hydroxamate is Neuroprotective and Induces Protein Phosphatase 2A-Dependent HIF-1α Stabilization and Post-transcriptional Dephosphorylation of Prolyl Hydrolase 2</a>
+                <span class="pub-authors">Prados ME, Correa-Sáez A, Unciti-Broceta JD, <strong>Garrido-Rodriguez M</strong>, …, Muñoz E</span>
+                <span class="pub-venue"><em>Neurotherapeutics</em>, 18, 1849–1861 (2021) · <a href="https://doi.org/10.1007/s13311-021-01089-4" target="_blank" rel="noopener">doi:10.1007/s13311-021-01089-4</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.frontiersin.org/articles/10.3389/fcell.2021.641618/full" target="_blank" rel="noopener">Implementation of CRISPR/Cas9 Genome Editing to Generate Murine Lung Cancer Models That Depict the Mutational Landscape of Human Disease</a>
+                <span class="pub-authors">Hartmann O, Reissland M, Maier CR, …, <strong>Garrido-Rodriguez M</strong>, …, Diefenbacher ME</span>
+                <span class="pub-venue"><em>Frontiers in Cell and Developmental Biology</em>, 9, 641618 (2021) · <a href="https://doi.org/10.3389/fcell.2021.641618" target="_blank" rel="noopener">doi:10.3389/fcell.2021.641618</a></span>
+              </li>
+              <li class="is-featured">
+                <a class="pub-title" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008748" target="_blank" rel="noopener">A versatile workflow to integrate RNA-seq genomic and transcriptomic data into mechanistic models of signaling pathways</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M</strong>, Lopez-Lopez D, Ortuno FM, Peña-Chilet M, Muñoz E, Calzado MA, Dopazo J</span>
+                <span class="pub-venue"><em>PLOS Computational Biology</em>, 17, e1008748 (2021) · <a href="https://doi.org/10.1371/journal.pcbi.1008748" target="_blank" rel="noopener">doi:10.1371/journal.pcbi.1008748</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2020</h4>
+            <ol class="pub-list">
+              <li>
+                <a class="pub-title" href="https://link.springer.com/article/10.1007/s00018-020-03556-1" target="_blank" rel="noopener">Updating dual-specificity tyrosine-phosphorylation-regulated kinase 2 (DYRK2): molecular basis, functions and role in diseases</a>
+                <span class="pub-authors">Correa-Sáez A, Jiménez-Izquierdo R, <strong>Garrido-Rodriguez M</strong>, Morrugares R, Muñoz E, Calzado MA</span>
+                <span class="pub-venue"><em>Cellular and Molecular Life Sciences</em>, 77, 4747–4763 (2020) · <a href="https://doi.org/10.1007/s00018-020-03556-1" target="_blank" rel="noopener">doi:10.1007/s00018-020-03556-1</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://bpspubs.onlinelibrary.wiley.com/doi/10.1111/bph.15155" target="_blank" rel="noopener">Δ9 ‐Tetrahydrocannabinolic acid alleviates collagen‐induced arthritis: Role of PPARγ and CB 1 receptors</a>
+                <span class="pub-authors">Palomares B, <strong>Garrido-Rodriguez M</strong>, Gonzalo-Consuegra C, …, Muñoz E</span>
+                <span class="pub-venue"><em>British Journal of Pharmacology</em>, 177, 4034–4054 (2020) · <a href="https://doi.org/10.1111/bph.15155" target="_blank" rel="noopener">doi:10.1111/bph.15155</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S0969996120302692" target="_blank" rel="noopener">Effects of EHP-101 on inflammation and remyelination in murine models of Multiple sclerosis</a>
+                <span class="pub-authors">Navarrete C, García-Martin A, <strong>Garrido-Rodriguez M</strong>, Mestre L, Feliú A, Guaza C, Calzado MA, Muñoz E</span>
+                <span class="pub-venue"><em>Neurobiology of Disease</em>, 143, 104994 (2020) · <a href="https://doi.org/10.1016/j.nbd.2020.104994" target="_blank" rel="noopener">doi:10.1016/j.nbd.2020.104994</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://link.springer.com/article/10.1007/s00018-019-03309-9" target="_blank" rel="noopener">Phosphorylation-dependent regulation of the NOTCH1 intracellular domain by dual-specificity tyrosine-regulated kinase 2</a>
+                <span class="pub-authors">Morrugares R, Correa-Sáez A, Moreno R, <strong>Garrido-Rodriguez M</strong>, Muñoz E, de la Vega L, Calzado MA</span>
+                <span class="pub-venue"><em>Cellular and Molecular Life Sciences</em>, 77, 2621–2639 (2020) · <a href="https://doi.org/10.1007/s00018-019-03309-9" target="_blank" rel="noopener">doi:10.1007/s00018-019-03309-9</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S0006295219303922" target="_blank" rel="noopener">Tetrahydrocannabinolic acid A (THCA-A) reduces adiposity and prevents metabolic disease caused by diet-induced obesity</a>
+                <span class="pub-authors">Palomares B, Ruiz-Pino F, <strong>Garrido-Rodriguez M</strong>, …, Muñoz E</span>
+                <span class="pub-venue"><em>Biochemical Pharmacology</em>, 171, 113693 (2020) · <a href="https://doi.org/10.1016/j.bcp.2019.113693" target="_blank" rel="noopener">doi:10.1016/j.bcp.2019.113693</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S2213231719306470" target="_blank" rel="noopener">Cannabidiol induces antioxidant pathways in keratinocytes by targeting BACH1</a>
+                <span class="pub-authors">Casares L, García V, <strong>Garrido-Rodriguez M</strong>, …, Muñoz E</span>
+                <span class="pub-venue"><em>Redox Biology</em>, 28, 101321 (2020) · <a href="https://doi.org/10.1016/j.redox.2019.101321" target="_blank" rel="noopener">doi:10.1016/j.redox.2019.101321</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2019</h4>
+            <ol class="pub-list">
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S0006295219300772" target="_blank" rel="noopener">Cannabinoid derivatives acting as dual PPARγ/CB2 agonists as therapeutic agents for systemic sclerosis</a>
+                <span class="pub-authors">García-Martín A, <strong>Garrido-Rodriguez M</strong>, Navarrete C, …, Muñoz E</span>
+                <span class="pub-venue"><em>Biochemical Pharmacology</em>, 163, 321–334 (2019) · <a href="https://doi.org/10.1016/j.bcp.2019.02.029" target="_blank" rel="noopener">doi:10.1016/j.bcp.2019.02.029</a></span>
+              </li>
+              <li class="is-featured">
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S1874391918303786" target="_blank" rel="noopener">SWATH proteomic profiling of prostate cancer cells identifies NUSAP1 as a potential molecular target for Galiellalactone</a>
+                <span class="pub-authors"><strong>Garrido-Rodriguez M</strong>, Ortea I, Calzado MA, Muñoz E, García V</span>
+                <span class="pub-venue"><em>Journal of Proteomics</em>, 193, 217–229 (2019) · <a href="https://doi.org/10.1016/j.jprot.2018.10.012" target="_blank" rel="noopener">doi:10.1016/j.jprot.2018.10.012</a></span>
+              </li>
+            </ol>
+            <h4 class="pub-year">2018</h4>
+            <ol class="pub-list">
+              <li>
+                <a class="pub-title" href="https://www.sciencedirect.com/science/article/pii/S0006295218303174" target="_blank" rel="noopener">EHP-101, an oral formulation of the cannabidiol aminoquinone VCE-004.8, alleviates bleomycin-induced skin and lung fibrosis</a>
+                <span class="pub-authors">García-Martín A, <strong>Garrido-Rodriguez M</strong>, Navarrete C, del Río C, Bellido ML, Appendino G, Calzado MA, Muñoz E</span>
+                <span class="pub-venue"><em>Biochemical Pharmacology</em>, 157, 304–313 (2018) · <a href="https://doi.org/10.1016/j.bcp.2018.07.047" target="_blank" rel="noopener">doi:10.1016/j.bcp.2018.07.047</a></span>
+              </li>
+              <li>
+                <a class="pub-title" href="https://febs.onlinelibrary.wiley.com/doi/10.1002/1878-0261.12369" target="_blank" rel="noopener">Metabolomic profiling of human lung tumor tissues – nucleotide metabolism as a candidate for therapeutic interventions and biomarkers</a>
+                <span class="pub-authors">Moreno P, Jiménez-Jiménez C, <strong>Garrido-Rodriguez M</strong>, …, Calzado MA</span>
+                <span class="pub-venue"><em>Molecular Oncology</em>, 12, 1778–1796 (2018) · <a href="https://doi.org/10.1002/1878-0261.12369" target="_blank" rel="noopener">doi:10.1002/1878-0261.12369</a></span>
+              </li>
+            </ol>
+          </div>
+          <p class="pub-note"><sup>†</sup> Equal contribution.</p>
+        </div>
+      </section>
+
       <footer>
         <span>© 2026 Garrido-Rodriguez Lab</span>
         <a class="footer-github" href="https://github.com/garridolab" target="_blank" rel="noopener">
@@ -494,6 +866,26 @@
       theme = theme === 'light' ? 'dark' : 'light';
       localStorage.setItem(STORAGE_KEY, theme);
       applyTheme(theme);
+    });
+
+    /* ---- Publication tabs ---------------------------------------------- */
+    const pubTabs = [...document.querySelectorAll('.pub-tabs [role="tab"]')];
+    function selectPubTab(tab) {
+      for (const t of pubTabs) {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      }
+    }
+    pubTabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => selectPubTab(tab));
+      tab.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const next = pubTabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + pubTabs.length) % pubTabs.length];
+        next.focus();
+        selectPubTab(next);
+      });
     });
 
     /* ---- Network background --------------------------------------------
